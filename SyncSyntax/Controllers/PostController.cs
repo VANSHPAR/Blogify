@@ -90,11 +90,5 @@ namespace SyncSyntax.Controllers
             return "/images/" + fileName;
 
         }
-
-
-
-
-
-
     }
 }

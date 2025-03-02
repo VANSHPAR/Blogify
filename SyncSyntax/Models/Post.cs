@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SyncSyntax.Models
@@ -19,12 +20,14 @@ namespace SyncSyntax.Models
         [MaxLength(100, ErrorMessage = "The Name cannot exceed 100 characters")]
         public string Author { get; set; }
 
+        [ValidateNever]
         public string FeatureImagePath { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime PublishedDate { get; set; } = DateTime.Now;
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
+        [ValidateNever]
         public Category Category { get; set; }
     }
 }
