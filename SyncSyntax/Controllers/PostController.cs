@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SyncSyntax.Data;
 using SyncSyntax.Models.ViewModels;
 
@@ -19,9 +20,18 @@ namespace SyncSyntax.Controllers
 
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int? categoryId)
         {
-            return View();
+            var postQuery = _context.Posts.Include(p => p.Category).AsQueryable();
+
+            if (categoryId.HasValue)
+            {
+                postQuery = postQuery.Where(p => p.CategoryId == categoryId);
+            }
+            var posts = postQuery.ToList();
+
+            ViewBag.Categories = _context.Categories.ToList();
+            return View(posts);
         }
 
         [HttpGet]
