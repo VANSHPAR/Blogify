@@ -18,7 +18,6 @@ namespace SyncSyntax.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-
         [HttpGet]
         public IActionResult Index(int? categoryId)
         {
