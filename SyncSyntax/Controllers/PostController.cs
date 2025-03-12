@@ -52,7 +52,7 @@ namespace SyncSyntax.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PostViewModel postViewModel)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var inputFileExtension = Path.GetExtension(postViewModel.FeatureImage.FileName).ToLower();
                 bool isAllowed = _allowedExtension.Contains(inputFileExtension);
@@ -63,11 +63,18 @@ namespace SyncSyntax.Controllers
                     return View(postViewModel);
                 }
 
-               postViewModel.Post.FeatureImagePath = await UploadFiletoFolder(postViewModel.FeatureImage);
+                postViewModel.Post.FeatureImagePath = await UploadFiletoFolder(postViewModel.FeatureImage);
                 await _context.Posts.AddAsync(postViewModel.Post);
-               await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+            postViewModel.Categories = _context.Categories.Select(c =>
+                new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }
+            ).ToList();
 
             return View(postViewModel);
         }
