@@ -136,7 +136,7 @@ namespace SyncSyntax.Controllers
                 return View(editViewModel);
             }
 
-            var postFromDb =await _context.Posts.FirstOrDefaultAsync(p=>p.Id==editViewModel.Post.Id);
+            var postFromDb =await _context.Posts.AsNoTracking().FirstOrDefaultAsync(p=>p.Id==editViewModel.Post.Id);
 
             if (postFromDb == null)
             {
@@ -171,6 +171,9 @@ namespace SyncSyntax.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+
+        
+        
 
         public JsonResult AddComment([FromBody]Comment comment)
         {
