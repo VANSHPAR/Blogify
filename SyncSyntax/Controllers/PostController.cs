@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SyncSyntax.Data;
 using SyncSyntax.Models;
 using SyncSyntax.Models.ViewModels;
+using System.Linq;
 
 namespace SyncSyntax.Controllers
 {
@@ -96,6 +97,81 @@ namespace SyncSyntax.Controllers
 
             return View(postViewModel);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var postFromDb = await _context.Posts.FirstOrDefaultAsync(p=>p.Id == id);
+            
+            if(postFromDb == null)
+            {
+                return NotFound();
+            }
+
+            EditViewModel editViewModel = new EditViewModel
+            {
+                Post = postFromDb,
+                Categories = _context.Categories.Select(c =>
+                new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }
+            ).ToList()
+            };
+
+            return View(editViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditViewModel editViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(editViewModel);
+            }
+
+            var postFromDb =await _context.Posts.FirstOrDefaultAsync(p=>p.Id==editViewModel.Post.Id);
+
+            if (postFromDb == null)
+            {
+                return NotFound();
+            }
+
+            if(editViewModel.FeatureImage != null)
+            {
+                var inputFileExtension = Path.GetExtension(editViewModel.FeatureImage.FileName).ToLower();
+                bool isAllowed = _allowedExtension.Contains(inputFileExtension);
+
+                if (!isAllowed)
+                {
+                    ModelState.AddModelError("", "Invalid Image Format. Allowed Format are .jpg, .jpeg, .png");
+                    return View(editViewModel);
+                }
+
+                var existingFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", Path.GetFileName(postFromDb.FeatureImagePath));
+
+                if(System.IO.File.Exists(existingFilePath))
+                {
+                    System.IO.File.Delete(existingFilePath);
+                }
+
+                editViewModel.Post.FeatureImagePath = await UploadFiletoFolder(editViewModel.FeatureImage);
+            }
+            else
+            {
+                editViewModel.Post.FeatureImagePath = postFromDb.FeatureImagePath;
+            }
+            _context.Posts.Update(editViewModel.Post);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
         public JsonResult AddComment([FromBody]Comment comment)
         {
             comment.CommentDate = DateTime.Now;
