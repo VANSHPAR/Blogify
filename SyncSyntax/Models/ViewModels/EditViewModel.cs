@@ -9,7 +9,7 @@ namespace SyncSyntax.Models.ViewModels
         [ValidateNever]
         public IEnumerable<SelectListItem> Categories { get; set; }
 
-        
+        [ValidateNever]
         public IFormFile FeatureImage { get; set; }
     }
 }
