@@ -97,6 +97,14 @@ namespace SyncSyntax.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Post");
+        }
     }
 }
 
