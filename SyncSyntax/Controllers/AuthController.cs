@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SyncSyntax.Models.ViewModels;
 
@@ -61,5 +62,45 @@ namespace SyncSyntax.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user == null)
+                {
+                    ModelState.AddModelError("", "Email or Password is Incorrect");
+                    return View(model);
+                }
+
+               var signInresult =  await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+
+                if (!signInresult.Succeeded)
+                {
+                    ModelState.AddModelError("", "Email or Password is Incorrect");
+                    return View(model);
+                }
+
+                return RedirectToAction("Index", "Post");
+
+            }
+
+            return View(model);
+        }
     }
 }
+
+
+
+
+
