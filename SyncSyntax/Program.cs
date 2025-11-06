@@ -28,14 +28,43 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+ 
+using(var scope = app.Services.CreateScope())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+   var _userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+   var _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string adminEmail = "admin@gmail.com";
+    string adminPassword = "admin";
+
+    var existingAdminRole = await _roleManager.FindByNameAsync("Admin");
+
+    if(existingAdminRole == null)
+    {
+        await _roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+
+    var existingAdminUser = await _userManager.FindByEmailAsync(adminEmail);
+
+    if(existingAdminUser == null)
+    {
+       await _userManager.CreateAsync(new IdentityUser { UserName= adminEmail, Email = adminEmail },adminPassword);
+        await _userManager.AddToRoleAsync(new IdentityUser { UserName = adminEmail, Email = adminEmail }, "Admin");
+    }
+    
+
 }
+
+
+
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Home/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
 
 app.UseHttpsRedirection();
 app.UseRouting();
