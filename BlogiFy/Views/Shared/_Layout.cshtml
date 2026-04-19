@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Blogify</title>
+    <script type="importmap"></script>
+ 
+    <link rel="stylesheet" href="~/lib/bootswatch/bootstrap.min.css" />
+    @* <link rel="stylesheet" href="~/SyncSyntax.styles.css" asp-append-version="true" /> *@
+</head>
+<body>
+    <header>
+        @Html.Partial("_Navbar.cshtml")
+    </header>
+    <div class="container">
+        <main role="main" >
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-3">
+        <div class="container">
+            &copy; 2026 - Blogify - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <script>
+        /// <reference path="../../wwwroot/lib/jquery/dist/jquery.js" />
+   </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
